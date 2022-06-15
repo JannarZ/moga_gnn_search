@@ -3,19 +3,19 @@
 This repository contains code for MOGA search of the physical realistic grain boundary (GB) structures of 2D materials as mentioned in the paper "Graph Neural Network Guided Evolutionary Search of Grain Boundaries in 2D Materials". Other details for GA search of 2D materials can be found in the second paper in [Citation](#citation) section.
 
 ## Usage
-To perform the MOGA searching, python scripts in the [ga_scripts](ga_scripts/) musted be copied to the folder where the search is performed. Two structure input files similar to [12left](example/12left), [12right](example/12right) should also present in the searching folder, as they are treated as the bulk parts of 2D materials. For the two bulk part structures, same format as POSCAR file used by [VASP](https://www.vasp.at/) is adopted. A graph neural network (GNN) model trained to predict the structural energy such as [potential file](example/1212tersoff_950each_model_new.pt) in the example should also be copied to the search folder. The file named `ga_input.yaml` can be modified so the correct settings applied. The details of the flags defiend in the this file is discussed in [ga_input_explanation](ga_input_explanation.md) file.
+To perform the MOGA searching, python scripts in the [ga_scripts](ga_scripts/) musted be copied to the folder where the search is performed. Two structure input files similar to [12left](example/12left), [12right](example/12right) should also present in the searching folder, as they are treated as the bulk parts of 2D materials. For the two bulk part structures, same format as POSCAR file used by [VASP](https://www.vasp.at/) is adopted. A graph neural network (GNN) model trained to predict the structural energy such as [potential file](example/1212tersoff_950each_model_new.pt) in the example should also be copied to the search folder. The file named `ga_input.yaml` can be modified so the correct settings applied. The function of the flags is dicussed in the comment of the [`ga_input.yaml`](ga_scripts/ga_input.yaml) in ga_scripts folder. 
 
 ## Prerequisites
 [ASE](https://wiki.fysik.dtu.dk/ase/)  
 [DEAP](https://github.com/DEAP/deap)  
 [Numpy](https://numpy.org/)  
-[PyTorch](https://pytorch.org/)  
-[PyTorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/index.html)  
-[NetWorkX](https://networkx.org/)  
+[PyTorch](https://pytorch.org/)   
+[NetWorkX](https://networkx.org/)
+[PyTorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/index.html) 
 
 ## GNN Model
-The code of the GNN model used for search is share in the following two repositories:
-https://github.com/JannarZ/gnn_bp_gb_tersoff
+The code of the GNN model used for search is share in the following two repositories:  
+https://github.com/JannarZ/gnn_bp_gb_tersoff  
 https://github.com/JannarZ/gnn_bp_gb_dft
 
 ## Citation
