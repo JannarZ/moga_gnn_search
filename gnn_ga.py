@@ -71,8 +71,6 @@ try:
     right_side_atom_num = input_settings['general_settings']['right_side_atom_num']
     left_side_file_name = input_settings['general_settings']['left_side_file_name']
     right_side_file_name = input_settings['general_settings']['right_side_file_name']
-    lammps_input_file_static = input_settings['general_settings']['lammps_input_file_static']
-    lammps_input_file_minimize = input_settings['general_settings']['lammps_input_file_minimize']
     sand_box_path = input_settings['general_settings']['sand_box_path']
     single_run_time_limit = input_settings['general_settings']['single_run_time_limit']
     num_promoted = input_settings['general_settings']['num_promoted']
@@ -294,8 +292,6 @@ def run():
                     'cell_height = ' + str(cell_height) + '\n' +
                     'left_side_atom_num = ' + str(left_side_atom_num) + '\n' +
                     'right_side_atom_num = ' + str(right_side_atom_num) + '\n' +
-                    'lammps_input_file_static = ' + lammps_input_file_static + '\n' +
-                    'lammps_input_file_minimize = ' + lammps_input_file_minimize + '\n' +
                     'sand_box_path = ' + sand_box_path + '\n' +
                     'single_run_time_limit = ' + str(single_run_time_limit) + '\n' +
                     'num_promoted = ' + str(num_promoted) + '\n' +
