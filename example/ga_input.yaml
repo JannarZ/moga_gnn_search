@@ -1,49 +1,55 @@
 # defined GA parameters
-# increased the mute probability to see if helps
-# Try smaller inter-atomic distance limit
 general_settings:
   run_title: "bp1212_multiobj_gnn_950train_new"
-  read_restart_file: False
-  write_restart_every: 1
-  index: 0
-  cutoff: 2.6
-  num_member_hof: 10
-  max_generation: 5000
-  population_size: 20
-  left_side_atom_num: 30.0
+  read_restart_file: False  # whether to used the restart binary file to restart 
+  write_restart_every: 1  # write the binary file for restart every n steps 
+  index: 0  # starting point of the index
+  cutoff: 2.6  # bond lenght cutoff
+  num_member_hof: 10  # number of best structures recorded
+  max_generation: 5000  # maximum of the generation number of GA search
+  population_size: 20  # population size for each generation
+  left_side_atom_num: 30.0 
   right_side_atom_num: 30.0
-  model_file: "/Users/randy/multi_obj_ga/bp1212_multiobj_ga_gnn_950train_new/1212tersoff_950each_model_new.pt"
+  model_file: "/path/to/the/GNN_model/1212tersoff_950each_model_new.pt"
   left_side_file_name: "12left"
   right_side_file_name: "12right"
-  lammps_input_file_static: ""
-  lammps_input_file_minimize: "/Users/randy/multi_obj_ga/in1212.min"
-  sand_box_path: "/Volumes/Jianan_ssd/multi_ga_search_structures_backup"
-  single_run_time_limit: 120
-  num_promoted: 0
+  sand_box_path: "/path/for/save/the/structures/not/selected/in/GA"
+  single_run_time_limit: 120  # time limit to terminate the energy evaluation of single structure
+  num_promoted: 0  # best of num_promoted structures are directly added to next generation
 
 # interface structure settings
 interface_settings:
-  cell_height: 16
-  interface_len: 8.761141
-  left_e_per_atom: -3.67014366767725
+  cell_height: 16  # supercell height (z direction)
+  interface_len: 8.761141  # interface length of the blue phosphorene (12|12) orientation 
+  left_e_per_atom: -3.67014366767725  # energy per atom evaluated by DFT
   right_e_per_atom: -3.67014366767725
-  min_width: 1
-  max_width: 9
-  max_height: 1.6
-  min_atom_num: 0
-  max_atom_num: 100
-  max_coord_num: 4
-  inter_atom_limit: 'covalent radius'
-  atom_type_list: [15, 15]
+  min_width: 1  # minimum width of the GB region
+  max_width: 9  # maximum width of the GB reigion
+  max_height: 1.6  # maximum height difference between all atoms in GB region
+  min_atom_num: 0  # minmum allowed number of atoms in GB region
+  max_atom_num: 100  # maximum allowed number of atoms in GB region
+  max_coord_num: 4  # maximum allowed coordination number for all atoms 
+  inter_atom_limit: 'covalent radius'  # minimum interatomic distance allowed
+  atom_type_list: [15, 15]  # atomic number for left and right bulk side
 
 # variation parameters
 variational_settings:
-  cut_loc_mu: 0.5
-  cut_loc_sigma: 0.3
-  structure_mutation_fraction: 0.5
-  structure_mutation_sigma: 0.1
-  atom_num_mutation_mean: 0
-  atom_num_mutation_sigma: 3
+  # cross over will cut two structures in middle and reassemble them into child structures
+  # the cutting point follows a normal distribution where mean and deviation can be set here 
+  cut_loc_mu: 0.5  # mean value for the cross over cutting point (value from 0 to 1)
+  cut_loc_sigma: 0.3  # deviation for the cross over cutting point (cutting point follows a normal distribution)
+  
+  # structure mutation move around the atoms in the structure
+  # the moved distance follows a normal distribution
+  structure_mutation_fraction: 0.5  # mean value of the distribution
+  structure_mutation_sigma: 0.1  # devation of the distribution
+  
+  # atom number mutation add or remove atoms randomly
+  # number of atoms added or removed follows a normal distribution
+  atom_num_mutation_mean: 0  # mean
+  atom_num_mutation_sigma: 3  # deviation
+  
+  # probabilities of various operations during GA process
   probability_crossover: 0.3
   probability_structure_mutation: 0.3
   probability_atom_num_mutation: 0.3
@@ -51,9 +57,9 @@ variational_settings:
 
 # file settings
 output_settings:
-  write_restart_file: "restart"
-  setting_file: "settings"
-  offspring_file: "offspring"
-  pool_summary: "pool_summary"
-  best_objective_file: "objective_file"
-  hof_file: "hof"
+  write_restart_file: "restart" # restart file name
+  setting_file: "settings"  # file that save settings 
+  offspring_file: "offspring"  # file that save offspring information
+  pool_summary: "pool_summary"  # file that save pool information generation wise
+  best_objective_file: "objective_file"  # file that keep record of best seen fitness values
+  hof_file: "hof"  # Hall of fame, where best seen structrues are recorded
