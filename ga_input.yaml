@@ -2,7 +2,7 @@
 # increased the mute probability to see if helps
 # Try smaller inter-atomic distance limit
 general_settings:
-  run_title: "bp1212_multiobj_gnn_950train_new"
+  run_title: "title_of_the_job"
   read_restart_file: False
   write_restart_every: 1
   index: 0
@@ -12,12 +12,10 @@ general_settings:
   population_size: 20
   left_side_atom_num: 30.0
   right_side_atom_num: 30.0
-  model_file: "/Users/randy/multi_obj_ga/bp1212_multiobj_ga_gnn_950train_new/1212tersoff_950each_model_new.pt"
-  left_side_file_name: "12left"
-  right_side_file_name: "12right"
-  lammps_input_file_static: ""
-  lammps_input_file_minimize: "/Users/randy/multi_obj_ga/in1212.min"
-  sand_box_path: "/Volumes/Jianan_ssd/multi_ga_search_structures_backup"
+  model_file: "path/to/the/torch_saved/model.pt"
+  left_side_file_name: "left_bulk_side_name"
+  right_side_file_name: "right_bulk_side_name"
+  sand_box_path: "/path/for/storing/non_selected/structures"
   single_run_time_limit: 120
   num_promoted: 0
 
