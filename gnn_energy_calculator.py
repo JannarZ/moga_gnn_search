@@ -1,4 +1,4 @@
-# Functions for GA interface with Lammps
+# functions for precting energy using GNN
 
 import os
 import shutil
@@ -10,14 +10,14 @@ from ase.io import read
 from os.path import dirname, join
 from copy import deepcopy
 
-# Import the neural network packages
+# import the neural network packages
 import torch.nn.functional as F
 from torch_geometric.utils import from_networkx
 from torch_geometric.data import Data
 from torch_geometric.loader import DataLoader
 
 
-# Function that determine the number k from eigenvalue spectrum
+# function that determine the number k from eigenvalue spectrum
 def select_k(spectrum: np.array, minimum_energy: float = 0.9) -> int:
     running_total = 0.0
     total = sum(spectrum)
@@ -30,8 +30,8 @@ def select_k(spectrum: np.array, minimum_energy: float = 0.9) -> int:
     return len(spectrum)
 
 
-# Function that calculate the similarity between two graphs
-# Using the eigenvector similarity
+# function that calculate the similarity between two graphs
+# using the eigenvector similarity
 def eigen_sim(ind_1: [[float]], ind_2: [[float]]) -> float:
 
     laplacian1 = nx.spectrum.laplacian_spectrum(ind_1.struct)
@@ -45,7 +45,7 @@ def eigen_sim(ind_1: [[float]], ind_2: [[float]]) -> float:
     return sum((laplacian1[:k] - laplacian2[:k]) ** 2)
 
 
-# Function that transfer structure file to graph object
+# function that transfer structure file to graph object
 def struc2graph(file, cutoff, format=None, pbc=[True, False, False], atom_force=False, get_energy=False):
     # get the total energy, which is the target for NN to train
     if get_energy:
@@ -162,9 +162,8 @@ def struc2graph(file, cutoff, format=None, pbc=[True, False, False], atom_force=
 
 
 # Function that calculate the novelty (graph edit distance) from two individuals (middle part)
-# TODO: Novelty should also consider the difference of cell
 def ged(ind_1: [[float]], ind_2: [[float]], cutoff: float = 2.6, pbc: [bool] = [True, False, False]) -> int:
-    # Create the graph objects for two individuals
+    # create the graph objects for two individuals
     g_1 = nx.Graph()
     g_2 = nx.Graph()
 
@@ -299,33 +298,33 @@ def energy_calculate_gnn(ind, pop, hof, model, left_e_per_atom, right_e_per_atom
 
         return
 
-    # Get the atom number for left and right side atom
+    # get the atom number for left and right side atom
     left_atom_num = np.count_nonzero(atom_obj.get_atomic_numbers() == left_atomic_num)
     right_atom_num = np.count_nonzero(atom_obj.get_atomic_numbers() == right_atomic_num)
 
-    # Create the Atoms object for ind
+    # create the Atoms object for ind
     ind_cell = np.array(ind[0])
     ind_position = ind_cell * np.delete(np.array(ind[1:]), -1, axis=1) 
     ind_atomic_numbers = np.array(ind[1:])[:, 2]
     ind_atom_obj = Atoms(ind_atomic_numbers, positions=ind_position, cell=ind_cell)
 
-    # Create the folder for storing the structures
+    # create the folder for storing the structures
     pwd = os.getcwd()
     job_dir = join(pwd, str(ind.index))
     os.mkdir(job_dir)
 
-    # Write the Lammps input structure to the folder
+    # write the Lammps input structure to the folder
     atom_obj.write(join(job_dir, 'in.atom'), format='lammps-data')
     ind_atom_obj.write(join(job_dir, 'middle'), format='lammps-data')
     rotate_obj.write(join(job_dir, 'rotate'), format='lammps-data')
 
-    # Using GNN get the energy of the system
+    # using GNN get the energy of the system
     pygeo_graph = from_networkx(nx_graph)
 
-    # Use dataloader to generate the batch with batch_size = 1
+    # use dataloader to generate the batch with batch_size = 1
     nominal_dataset = DataLoader([pygeo_graph], batch_size=1, shuffle=False)
 
-    # Use model to evaluate total energy
+    # use model to evaluate total energy
     tot_e = None
     for data in nominal_dataset:
         tot_e, emb = model(data)
@@ -341,7 +340,7 @@ def energy_calculate_gnn(ind, pop, hof, model, left_e_per_atom, right_e_per_atom
         formation_e = 100
 
     # calculate the fitness according to the novelty (graph edit distance)
-    # Select first some of the best structures from hof
+    # select first some of the best structures from hof
     selected_hof = hof[:len(pop)]
     eigen_sim_list = []
     for _ in pop:
@@ -381,7 +380,7 @@ def energy_calculate_gnn(ind, pop, hof, model, left_e_per_atom, right_e_per_atom
     print(f'Setting novelty and formation energy of individual {ind.index} to {ind.fitness.values[1]} & {ind.fitness.values[0]}')
 
 
-# Function for rotate in.data 180 degrees
+# function for rotate in.data 180 degrees
 def rotate_180(input_file, output_file, xcell_line, atom_line):
     # read input file cell and atom info
     with open(input_file, 'r') as f:
@@ -440,7 +439,7 @@ def rotate_180(input_file, output_file, xcell_line, atom_line):
     return y_cell
 
 
-# Get the total energy from static lammps run
+# get the total energy from static lammps run
 def get_tot_e_static(output_path):
     """
         :param output_path: the path to the LAMMPS output log file

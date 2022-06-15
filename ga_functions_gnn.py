@@ -70,12 +70,12 @@ def print_gen(population, gen, best_objective_file, energy_hof, hof=None):
     novelty_objs = [ind.fitness.values[1] for ind in population]
     pop_size = len(population)
 
-    # Calculate the statistical information for formation energy
+    # calculate the statistical information for formation energy
     energy_mean = sum(energy_objs) / pop_size
     energy_sum2 = sum(x*x for x in energy_objs)
     energy_std = abs(energy_sum2 / pop_size - energy_mean ** 2) ** 0.5
 
-    # Calculate the statistical information for novelty
+    # calculate the statistical information for novelty
     novelty_mean = sum(novelty_objs) / pop_size
     novelty_sum2 = sum(x * x for x in novelty_objs)
     novelty_std = abs(novelty_sum2 / pop_size - novelty_mean ** 2) ** 0.5
@@ -168,7 +168,6 @@ def check_constrain(ind, left_atom_obj, right_atom_obj, min_num, max_num, max_he
         frac_min_height = np.amin(ind_matrix, axis=0)[2]
         height_diff = cell_height * (frac_max_height - frac_min_height)
         if height_diff > max_height:
-            print('height')
             return False
         else:
             # check the coordination number for all atoms
@@ -178,15 +177,11 @@ def check_constrain(ind, left_atom_obj, right_atom_obj, min_num, max_num, max_he
             coord_num = np.bincount(nl)
             max_coord = coord_num.max()  # get the largest coordination number
             if max_coord > max_coord_num:
-                print('coord')
                 return False
 
             if not nx.is_connected(graph):
-                print('not connected')
                 return False
-            #if nx.has_bridges(graph):
-                #print('has bridge')
-                #return False
+
             # finally check the inter-atom distances
             # get the distance matrix
             dist_mat = atom_obj.get_all_distances(mic=True)  # minimum-image convention used
@@ -214,8 +209,6 @@ def check_constrain(ind, left_atom_obj, right_atom_obj, min_num, max_num, max_he
                     dist_limit = inter_atom_limit
                 real_dist = dist_mat[iu[0][i], iu[1][i]]
                 if real_dist < dist_limit:
-                    print(real_dist, dist_limit)
-                    #print('distance')
                     return False
             return True
     else:
@@ -223,20 +216,4 @@ def check_constrain(ind, left_atom_obj, right_atom_obj, min_num, max_num, max_he
 
 
 if __name__ == '__main__':
-    from ase.io import read, write
-    from ind_manipulation import ind_creator_dist_control
-
-    a = read(r'/Users/randy/multi_obj_ga/bp1212_multiobj_periodic/19740/all.atom', format='lammps-dump-text')
-    nl = neighbor_list('i', a, 2.6)
-    coord_num = np.bincount(nl)
-    max_coord = coord_num.max()  # get the largest coordination number
-    print(max_coord)
-
-    #left_atom_obj = read(r'/Users/randy/gnn_dataset/12left', format='vasp')
-    #right_atom_obj = read(r'/Users/randy/gnn_dataset/12right', format='vasp')
-    #ind = ind_creator_dist_control(8.761141, 4.5, 8, 2.5, 16, 8, 15, [15, 15], left_atom_obj, right_atom_obj)
-
-    #s, atom_obj = check_constrain(ind, left_atom_obj, right_atom_obj, 8, 15, 2.5, 4, 2.6, pbc=[True, False, False])
-    #print(s)
-
-    #atom_obj.write(r'/Users/randy/GA_interface/bp1212_gnn_check_coord_25h/test', format='vasp')
+    pass

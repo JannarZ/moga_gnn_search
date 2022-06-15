@@ -11,22 +11,7 @@ from pymatgen.core.lattice import Lattice
 from pymatgen.core.structure import Structure
 
 
-# TODO: finish all the creation and variation funcitons
-
-
 def ind_creator(interface_len, min_width, max_width, max_height, cell_height, min_atom_num, max_atom_num, atom_type_list):
-
-    """
-    :param interface_len: length of interface
-    :param min_width:
-    :param max_width:
-    :param max_height:
-    :param cell_height: total cell height including vacuum
-    :param min_atom_num:
-    :param max_atom_num:
-    :param atom_type_list: atom type list that include the atomic number of each type
-    :return: a list with first element be the size of the cell, rest of the them are the atom position
-    """
 
     ind = []
     # decide the cell size and the planar atom density
@@ -153,9 +138,6 @@ def ind_creator_dist_control(interface_len, min_width, max_width, max_height, ce
                     break
 
         # append the atom that satisfy the constrain to the ind
-        # the coordinates need to be modified so only the middle part remain
-        # use deepcopy so the coordinates won't be changed later for the same object
-        # wtf python?! if not use deep copy the variable name target to the original object
         filter_coords.append(deepcopy(random_coords))
         coords_before_norm = deepcopy(random_coords)
         coords_before_norm[1] -= left_cell[1]
@@ -178,13 +160,6 @@ def ind_creator_ama(interface_len, min_width, max_width, max_height, cell_height
                     right_atom_obj, inter_atom_limit, filter_range=3.5, loop_limit=10000):
     # decide the cell size and the planar atom density
     width = min_width + (max_width - min_width) * random.random()
-
-    # use the approximate planary atom density to decide how many atoms
-    # this helps avoid the case that in first generation all individuals are not good after relaxation
-    # max_density = max_atom_num / (interface_len * max_width)
-    # min_density = min_atom_num / (interface_len * min_width)
-    # planar_atom_density = (max_density + min_density) / 2
-    # atom_num = int(planar_atom_density * width * interface_len)
 
     # decide the atom range in z direction in cartesian coordinates
     bottom_limit = cell_height / 2 - max_height / 2
@@ -237,9 +212,9 @@ def ind_creator_ama(interface_len, min_width, max_width, max_height, cell_height
     except TypeError:
         use_covalent_dist = False
 
-    # Add more atoms satisfy the distance requirement
-    # Add as many atoms as possible to the middle part
-    # If after loop_limit iteration, still not find new atom, then give up
+    # add more atoms satisfy the distance requirement
+    # add as many atoms as possible to the middle part
+    # if after loop_limit iteration, still not find new atom, then give up
     continue_find = True
     while continue_find:
         loop_num = 0
@@ -283,11 +258,9 @@ def ind_creator_ama(interface_len, min_width, max_width, max_height, cell_height
                 continue_find = False
                 break
 
-        # Append the atom that satisfy the constrain to the ind
-        # The coordinates need to be modified so only the middle part remain
-        # Use deepcopy so the coordinates won't be changed later for the same object
-        # If the loop is interupted due to the maxmum loop number reached, don't append this very last atom
-        # Wtf python?! if not use deep copy the variable name target to the original object
+        # append the atom that satisfy the constrain to the ind
+        # the coordinates need to be modified so only the middle part remain
+        # use deepcopy so the coordinates won't be changed later for the same object
         if continue_find:
             filter_coords.append(deepcopy(random_coords))
             coords_before_norm = deepcopy(random_coords)
@@ -306,7 +279,7 @@ def ind_creator_ama(interface_len, min_width, max_width, max_height, cell_height
     return ind
 
 
-# Function that generate the ind object by stuffing as much as possible atoms
+# function that generate the ind object by stuffing as much as possible atoms
 # without break the interatomic limitation
 def ind_creator_amap(interface_len, min_width, max_width, max_height, cell_height, atom_type_list, left_atom_obj,
                     right_atom_obj, inter_atom_limit, filter_range=3.5, loop_limit=10000):
@@ -357,7 +330,6 @@ def ind_creator_amap(interface_len, min_width, max_width, max_height, cell_heigh
     for atom in right_coords:
         if right_cell[1] - filter_range < atom[1] <= right_cell[1]:
             filter_coords.append(atom)
-    #print(filter_coords)
 
     # build the atom coordinate array that contains all the coordinates for the neighbors of middle atom
     # here only the periodic image at the x direction is considered
@@ -373,9 +345,9 @@ def ind_creator_amap(interface_len, min_width, max_width, max_height, cell_heigh
     except TypeError:
         use_covalent_dist = False
 
-    # Add more atoms satisfy the distance requirement
-    # Add as many atoms as possible to the middle part
-    # If after loop_limit iteration, still not find new atom, then give up
+    # add more atoms satisfy the distance requirement
+    # add as many atoms as possible to the middle part
+    # if after loop_limit iteration, still not find new atom, then give up
     continue_find = True
     while continue_find:
         loop_num = 0
@@ -422,8 +394,6 @@ def ind_creator_amap(interface_len, min_width, max_width, max_height, cell_heigh
         # Append the atom that satisfy the constrain to the ind
         # The coordinates need to be modified so only the middle part remain
         # Use deepcopy so the coordinates won't be changed later for the same object
-        # If the loop is interupted due to the maxmum loop number reached, don't append this very last atom
-        # Wtf python?! if not use deep copy the variable name target to the original object
         if continue_find:
             filter_coords.append(deepcopy(random_coords))
             coords_before_norm = deepcopy(random_coords)
@@ -471,21 +441,21 @@ def attach(ind, left_atom_obj, right_atom_obj, cutoff=2.6, pbc=[True, True, Fals
     mid_attatched_pos = mid_ori_atom_pos + np.tile(np.array([0, right_cell[1], 0]), (mid_ori_atom_pos.shape[0], 1))
     left_attatched_pos = left_ori_atom_pos + np.tile(np.array([0, right_cell[1] + middle_cell[1], 0]), (left_ori_atom_pos.shape[0], 1))
 
-    # Generate the rotated atom objects
+    # generate the rotated atom objects
     if periodic_struc:
-        # Find the center-point to rotate according to
+        # find the center-point to rotate according to
         mid_x = middle_cell[0] / 2
         mid_y = middle_cell[1] / 2
         mid_z = middle_cell[2] / 2
         center_vec = np.array([mid_x, mid_y, mid_z])
 
-        # Calculate the translation vector for each atom
+        # calculate the translation vector for each atom
         trans_vec = center_vec - mid_ori_atom_pos
 
-        # Translate all atoms two times of the translation vector so all of it center symmetric with original
+        # translate all atoms two times of the translation vector so all of it center symmetric with original
         rotated_mid_ori_pos = mid_ori_atom_pos + 2 * trans_vec
 
-        # Generate the atom positions that need to be attatched
+        # generate the atom positions that need to be attatched
         rotated_mid_attatched_pos = rotated_mid_ori_pos + np.tile(np.array([0, left_cell[1] + middle_cell[1] +
                                                                             right_cell[1], 0]),
                                                                   (mid_ori_atom_pos.shape[0], 1))
@@ -575,8 +545,6 @@ def cross_over_1pt(parent_1, parent_2, cut_loc_mu, cut_loc_sigma):
     :return: two child individuals
     """
 
-    # TODO: add multiple points cross over or line slice
-
     # either slice the x or y direction
     dimension_index = random.randint(0, 1)
 
@@ -588,19 +556,6 @@ def cross_over_1pt(parent_1, parent_2, cut_loc_mu, cut_loc_sigma):
     interface_len = random.uniform(parent_1[0][0], parent_2[0][0])
     width = random.uniform(parent_1[0][1], parent_2[0][1])
     height = random.uniform(parent_1[0][2], parent_2[0][2])
-    '''rand = random.random()
-    if rand < (1/3):
-        interface_len = (parent_1[0][0] + parent_2[0][0])/2
-        width = (parent_1[0][1] + parent_2[0][1])/2
-        height = (parent_1[0][2] + parent_2[0][2])/2
-    elif (1/3) < rand < (2/3):
-        interface_len = max(parent_1[0][0], parent_2[0][0])
-        width = max(parent_1[0][1], parent_2[0][1])
-        height = max(parent_1[0][2], parent_2[0][2])
-    else:
-        interface_len = min(parent_1[0][0], parent_2[0][0])
-        width = min(parent_1[0][1], parent_2[0][1])
-        height = min(parent_1[0][2], parent_2[0][2])'''
 
     # make temporary copy of parents, and empty the original partents lists
     copy_1 = deepcopy(parent_1)
@@ -639,9 +594,7 @@ def cross_over_1pt(parent_1, parent_2, cut_loc_mu, cut_loc_sigma):
 def structure_mutation(ind, frac_atom, max_height, std):
     # determine how many atoms mutated according to the frac_atom parameter
     atom_num = len(ind)
-    #print(atom_num)
     mutate_atom_num = random.randint(1, len(ind)-1)
-    #print(mutate_atom_num)
 
     # get the cell size and limit for atom height in frac coordinates
     interface_len = ind[0][0]
@@ -660,7 +613,6 @@ def structure_mutation(ind, frac_atom, max_height, std):
         line_num = full_list
     else:
         line_num = random.sample(full_list, mutate_atom_num)
-    # print(line_num)
 
     # change the coordiante
     for line in line_num:
@@ -709,10 +661,9 @@ def atom_num_mutation(ind, sigma, min_atom_num, max_atom_num, max_height, atom_t
 
     # decide the atom change number by using a integer Gauss distribution
     # use a while loop to avoid the case that normal distribution give 0 or make
-    # TODO: find out a way that don't use while loop
     atom_change_num = 0
     while not (atom_change_num != 0 and (ind_len - 1 + atom_change_num) > 0):
-    #while not (atom_change_num != 0 and min_atom_num <= (ind_len - 1 + atom_change_num) <= max_atom_num):
+    # while not (atom_change_num != 0 and min_atom_num <= (ind_len - 1 + atom_change_num) <= max_atom_num):
         atom_change_num = round(random.gauss(mean_value, sigma))
 
     # remove or add atoms depends on value of atom_change_num
@@ -734,7 +685,7 @@ def atom_num_mutation(ind, sigma, min_atom_num, max_atom_num, max_height, atom_t
         return ind
 
 
-# Assign graph and atom object to the ind
+# assign graph and atom object to the ind
 def assign_struct(ind, left_atom_obj, right_atom_obj, cutoff, pbc):
 
     nx_graph, atom_obj, rotate_obj = attach(ind, left_atom_obj, right_atom_obj, cutoff=cutoff, pbc=pbc,
@@ -745,7 +696,7 @@ def assign_struct(ind, left_atom_obj, right_atom_obj, cutoff, pbc):
     ind.rotate_obj = rotate_obj
 
 
-# Function that assign a graph object to the ind
+# function that assign a graph object to the ind
 def assign_graph(ind, left_atom_obj, right_atom_obj, cutoff=2.6, pbc=[True, False, False]):
     # make cell a one dimensional vector
     left_cell = [left_atom_obj.get_cell()[0][0], left_atom_obj.get_cell()[1][1], left_atom_obj.get_cell()[2][2]]
@@ -817,9 +768,9 @@ def assign_graph(ind, left_atom_obj, right_atom_obj, cutoff=2.6, pbc=[True, Fals
     return ind.struct
 
 
-# Function that assign graph for each individual
+# function that assign graph for each individual
 def assign_graph_ind(ind_1, cutoff=2.6, pbc=[True, False, False]):
-    # Create the graph objects for ind
+    # create the graph objects for ind
     g_1 = nx.Graph()
 
     ind_1_cell = np.array(ind_1[0])
@@ -892,17 +843,7 @@ def write_ind(ind, path):
 
 
 if __name__ == '__main__':
-    from ase.io import read
-    left_atom_obj = read(r'/Users/randy/gnn_dataset/12left', format='vasp')
-    right_atom_obj = read(r'/Users/randy/gnn_dataset/12right', format='vasp')
-    attach(ind, left_atom_obj, right_atom_obj, return_graph=False)
-    #ind = ind_creator_ama(8.761141, 4.5, 8, 1.6, 16, [15, 15], left_atom_obj, right_atom_obj, 2.6)
-    #write_ind(ind, '/Users/randy/GA_interface/bp1212_gnn_dist_control_5000/ind_test')
-    #atom_obj = attach(ind, left_atom_obj, right_atom_obj, return_graph=False)
-    #atom_obj.write('/Users/randy/GA_interface/bp1212_gnn_dist_control_5000/whole_test', format='vasp')
-    #from ga_functions_gnn import check_constrain
-    #s = check_constrain(ind, left_atom_obj, right_atom_obj, 0, 100, 1.6, 4, 2.6, 2.2, pbc=[True, False, False])
-    #print(s)
+    pass
 
 
 

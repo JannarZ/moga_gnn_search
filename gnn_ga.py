@@ -1,5 +1,5 @@
 # Main loop for the genetic algorthim to optimize the interface
-# Use yaml to load the settings
+# Use .yaml file to load the settings
 
 # import general libraries
 
@@ -19,7 +19,7 @@ from deap import base
 from deap import creator
 from deap import tools
 
-# Import the neural network modules
+# import the neural network modules
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GINConv, global_add_pool
@@ -126,17 +126,17 @@ if (total_prob - 1) > 0.000001:
 hof = tools.ParetoFront(similar=check_redundancy)
 toolbox = base.Toolbox()
 
-# Define a energy hof to store the structure with the lowest energy ever seen
-# Normal HallOfFame obj in DEAP should sort structures base on first fitness
+# define a energy hof to store the structure with the lowest energy ever seen
+# normal HallOfFame obj in DEAP should sort structures base on first fitness
 energy_hof = tools.HallOfFame(num_member_hof, similar=check_redundancy)
 
 
-# Define the GIN class for GNN energy calculation
+# define the GIN class for GNN energy calculation
 class GIN(torch.nn.Module):
     def __init__(self, input_dim, conv_hidden_dim, linear_hidden_dim,
                  node_output_dim, graph_output_dim, conv_num_layers,
                  dropout, task='graph'):
-        # Implement this function that initializes the layers for node embeding
+        # implement this function that initializes the layers for node embeding
 
         super(GIN, self).__init__()
 
@@ -167,27 +167,13 @@ class GIN(torch.nn.Module):
 
         # post message passing layers after convolution
         self.post_mp = torch.nn.Sequential(torch.nn.Linear(conv_hidden_dim, linear_hidden_dim),
-                                           # torch.nn.BatchNorm1d(linear_hidden_dim),
-                                           # torch.nn.Tanh(),
                                            torch.nn.ReLU(),
-                                           # torch.nn.LeakyReLU(),
                                            torch.nn.Dropout(self.dropout),
-                                           # torch.nn.Linear(linear_hidden_dim, linear_hidden_dim),
-                                           # torch.nn.BatchNorm1d(linear_hidden_dim),
-                                           # torch.nn.ReLU(),
-                                           # torch.nn.Dropout(self.dropout),
-                                           # torch.nn.Linear(linear_hidden_dim, linear_hidden_dim),
-                                           # torch.nn.ReLU(),
-                                           # torch.nn.Dropout(self.dropout),
-                                           torch.nn.Linear(linear_hidden_dim, output_dim), )
+                                           torch.nn.Linear(linear_hidden_dim, output_dim),)
 
     def build_conv(self, in_dim, hidden_dim):
         return GINConv(torch.nn.Sequential(torch.nn.Linear(in_dim, hidden_dim),
-                                           # torch.nn.BatchNorm1d(hidden_dim),
-                                           # torch.nn.LeakyReLU(),
                                            torch.nn.ReLU(),
-                                           # torch.nn.Tanh(),
-                                           # torch.nn.Sigmoid(),
                                            torch.nn.Linear(hidden_dim, hidden_dim)))
 
     def reset_parameters(self):
@@ -197,7 +183,7 @@ class GIN(torch.nn.Module):
             bn.reset_parameters()
 
     def forward(self, data):
-        # Implement this function that takes the feature tensor x,
+        # implement this function that takes the feature tensor x,
         # edge_index tensor and returns the output tensor
 
         x, edge_index, batch = data.x, data.edge_index, data.batch
@@ -209,7 +195,6 @@ class GIN(torch.nn.Module):
             x = F.dropout(x, p=self.dropout, training=self.training)
         x = self.convs[-1](x, edge_index)
 
-        # global add seems work best for our problem
         x = global_add_pool(x, batch)
         emb = x
         x = self.post_mp(x)
@@ -217,7 +202,7 @@ class GIN(torch.nn.Module):
         return x, emb
 
 
-# Generate the atom object for side structures & load the GNN model
+# generate the atom object for side structures & load the GNN model
 model = torch.load(model_file, map_location='cpu')
 left_atom_obj = read(left_side_file_name, format='vasp')
 right_atom_obj = read(right_side_file_name, format='vasp')
@@ -228,19 +213,6 @@ def setup():
     creator.create('FitnessMin', base.Fitness, weights=((-1.0, 1.0)))
     creator.create('Individual', list, fitness=creator.FitnessMin, index=int, formation_e=float, history='Initial')
 
-    #toolbox.register('ind_creator', ind_creator_dist_control,
-    #                 interface_len=interface_len,
-    #                 min_width=min_width,
-    #                 max_width=max_width,
-    #                 max_height=max_height,
-    #                 cell_height=cell_height,
-    #                 min_atom_num=min_atom_num,
-    #                 max_atom_num=max_atom_num,
-    #                 atom_type_list=atom_type_list,
-    #                 left_atom_obj=left_atom_obj,
-    #                 right_atom_obj=right_atom_obj,
-    #                 inter_atom_limit=inter_atom_limit,
-    #                 filter_range=3.5)
     toolbox.register('ind_creator', ind_creator_amap,
                      interface_len=interface_len,
                      min_width=min_width,
@@ -328,7 +300,7 @@ def run():
                     'single_run_time_limit = ' + str(single_run_time_limit) + '\n' +
                     'num_promoted = ' + str(num_promoted) + '\n' +
 
-                    # Interface structure settings
+                    # interface structure settings
                     'interface_len = ' + str(interface_len) + '\n' +
                     'left_e_per_atom = ' + str(left_e_per_atom) + '\n' +
                     'right_e_per_atom = ' + str(right_e_per_atom) + '\n' +
@@ -339,7 +311,7 @@ def run():
                     'max_atom_num = ' + str(max_atom_num) + '\n' +
                     'atom_type_list = ' + str(atom_type_list) + '\n' +
 
-                    # Variation parameters
+                    # variation parameters
                     'cut_loc_mu = ' + str(cut_loc_mu) + '\n' +
                     'cut_loc_sigma = ' + str(cut_loc_sigma) + '\n' +
                     'structure_mutation_fraction = ' + str(structure_mutation_fraction) + '\n' +
@@ -351,7 +323,7 @@ def run():
                     'probability_atom_num_mutation = ' + str(probability_atom_num_mutation) + '\n' +
                     'probability_random_replace = ' + str(probability_random_replace) + '\n' +
 
-                    # File setting
+                    # file setting
                     'setting_file = ' + setting_file + '\n' +
                     'offspring_file = ' + offspring_file + '\n' +
                     'pool_summary = ' + pool_summary + '\n' +
@@ -363,7 +335,7 @@ def run():
         f_obj.write('Offspring fitness and history')
         f_obj.write('\n')
 
-    # Reset objective file
+    # reset objective file
     with open(best_objective_file, "a+") as f:
         f.write("#Evolution of the best objective with generation")
         f.write('\n')
@@ -386,9 +358,7 @@ def run():
     if read_restart_file is True:
         try:
             gen, population, pre_index = restart(write_restart_file)
-            # print(pre_index)
             index += pre_index
-            # print(index)
         except:
             print("cannot restart from %s, quiting..." % write_restart_file)
             read_restart_file = False
@@ -413,7 +383,7 @@ def run():
             print('Start trail initial population: ' + str(trail_population))
             population = toolbox.population(n=population_size)
 
-            # Assign the corresponding graph to each individual
+            # assign the corresponding graph to each individual
             for ind in population:
                 toolbox.assign_struct(ind)
 
@@ -423,11 +393,8 @@ def run():
                 toolbox.evaluate(ind, population, hof)
                 # check if individual satisfy the constrains
                 if not toolbox.satisfy_constrain(ind):
-                    # print('not')
-                    # toolbox.replace_by_random(ind)
                     original_fit = ind.fitness.values[0]
                     ind.fitness.values = (100, -100)
-                    # toolbox.assign_struct(ind)
                     histroy = f'Set individual {ind.index} original fitness: ' \
                               f'{original_fit} to arbitrary large since not satisfy constrains'
                     ind.history += histroy
@@ -470,7 +437,7 @@ def run():
         # clone the offspring
         offspring = list(toolbox.map(toolbox.clone, offspring))
 
-        # Apply crossover on part of the offsprings
+        # apply crossover on part of the offsprings
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < probability_crossover:
                 # if the parents are same apply some mutation
@@ -494,7 +461,7 @@ def run():
                 toolbox.assign_struct(child1)
                 toolbox.assign_struct(child2)
 
-        # Apply mutation on other offsprings
+        # apply mutation on other offsprings
         total_mut_prob = probability_structure_mutation + probability_atom_num_mutation + probability_random_replace
         normalize_struct_mutation_prob = probability_structure_mutation / total_mut_prob
         normalize_atom_num_mutation_prob = probability_atom_num_mutation / total_mut_prob
@@ -504,7 +471,6 @@ def run():
             rand = random.random()
             if mutant.fitness.valid:
                 if rand < prob:
-                    # print('in side (%d)' % prob)
                     toolbox.structure_mutation(mutant)
                     del mutant.fitness.values
                     del mutant.struct
@@ -515,7 +481,6 @@ def run():
             prob += normalize_atom_num_mutation_prob
             if mutant.fitness.valid:
                 if rand < prob:
-                    # print('2n side (%d)' % prob)
                     toolbox.atom_num_mutation(mutant)
                     del mutant.fitness.values
                     del mutant.struct
@@ -526,7 +491,6 @@ def run():
             prob += normalize_random_replace_prob
             if mutant.fitness.valid:
                 if rand < prob:
-                    # print('2n side (%d)' % prob)
                     toolbox.replace_by_random(mutant)
                     del mutant.fitness.values
                     del mutant.struct
@@ -545,26 +509,8 @@ def run():
                 toolbox.assign_struct(ind)
                 histroy = 'Replaced by random individual(%d) AFTER-check' % ind.index
                 ind.history = histroy
-            ''''if not toolbox.satisfy_atom_num_constrain(ind):
-                toolbox.replace_by_random(ind)
-                ind.fitness.values = (100,)
-                # toolbox.assign_struct(ind)
-                histroy = 'Set individual(%d) fitness to 100 since not satisfy constrains' % ind.index
-                ind.history = histroy'''
-
-        '''for ind in offspring:
-            try:
-                ind.struct
-                print('ind (%d) have struct' % index)
-            except:
-                print('ind (%d) dont have struct' % index)'''
-
-        # reassign structure for individuals
-        # for ind in offspring:
-        # toolbox.assign_struct(ind)
-        # print(ind.struct)
-
-        # Redundancy guard
+            
+        # redundancy guard
         test_list = list(toolbox.map(toolbox.clone, population))
         for new_ind in offspring:
             for test_ind in test_list:
@@ -575,23 +521,12 @@ def run():
                     else:
                         toolbox.atom_num_mutation(new_ind)
                         history = 'Atom number mutate from individual(%d) RED' % new_ind.index
-                    # toolbox.replace_by_random(new_ind)
                     del new_ind.fitness.values
                     del new_ind.struct
                     del new_ind.atom_obj
                     del new_ind.rotate_obj
                     toolbox.assign_struct(new_ind)
-                    # history = 'Replaced by random individual(%d) RED' % new_ind.index
                     new_ind.history += history
-
-        # check if individual satify the constrains
-        '''for ind in offspring:
-            if not toolbox.satisfy_constrain(ind):
-                # toolbox.replace_by_random(ind)
-                ind.fitness.values = (100,)
-                # toolbox.assign_struct(ind)
-                histroy = 'Set individual(%d) fitness to 100 since not satisfy constrains' % ind.index
-                ind.history += histroy'''
 
         # pick out the individuals that changed in variation
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
@@ -613,11 +548,8 @@ def run():
             except ValueError:
                 satisfy_constrain = False
             if not satisfy_constrain:
-                # print('not')
-                # toolbox.replace_by_random(ind)
                 original_fit = bad_ind.fitness.values[0]
                 bad_ind.fitness.values = (100, -100)
-                # toolbox.assign_struct(ind)
                 histroy = f'Set individual {bad_ind.index} fitness from {original_fit} ' \
                           f'to arbitrary large since not satisfy constrains'
                 bad_ind.history += histroy
@@ -635,14 +567,14 @@ def run():
         hof.update(population)
         energy_hof.update(population)
 
-        # Get a list of the index of ind in energy hof
+        # get a list of the index of ind in energy hof
         hof_index = [_.index for _ in hof]
         energy_hof_index = [_.index for _ in energy_hof]
 
-        # Print the population information to the screen
+        # print the population information to the screen
         print_gen(population, gen, best_objective_file, energy_hof, hof=hof)
 
-        # Write both hof to the hof file
+        # write both hof to the hof file
         write_hof(hof_file, gen, hof, energy_hof)
 
         # move the unselected files to sandbox zip file and delete unnecessary files
@@ -660,7 +592,6 @@ def run():
         # write the restart pickle file
         if (write_restart_file is not None) and (gen % write_restart_every == 0):
             cp = dict(population=population, generation=gen, index=index, rndstate=random.getstate())
-            # print(index)
             with open(write_restart_file + '.tmp', "wb") as f:
                 pickle.dump(cp, f)
             shutil.move(write_restart_file + '.tmp', write_restart_file)
