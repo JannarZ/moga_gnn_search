@@ -7,8 +7,6 @@ from ase import Atoms
 from ase.io import write
 from copy import deepcopy
 from ase.data import covalent_radii
-from pymatgen.core.lattice import Lattice
-from pymatgen.core.structure import Structure
 
 
 def ind_creator(interface_len, min_width, max_width, max_height, cell_height, min_atom_num, max_atom_num, atom_type_list):
