@@ -1,0 +1,59 @@
+# defined GA parameters
+# increased the mute probability to see if helps
+# Try smaller inter-atomic distance limit
+general_settings:
+  run_title: "bp1212_multiobj_gnn_950train_new"
+  read_restart_file: False
+  write_restart_every: 1
+  index: 0
+  cutoff: 2.6
+  num_member_hof: 10
+  max_generation: 5000
+  population_size: 20
+  left_side_atom_num: 30.0
+  right_side_atom_num: 30.0
+  model_file: "/Users/randy/multi_obj_ga/bp1212_multiobj_ga_gnn_950train_new/1212tersoff_950each_model_new.pt"
+  left_side_file_name: "12left"
+  right_side_file_name: "12right"
+  lammps_input_file_static: ""
+  lammps_input_file_minimize: "/Users/randy/multi_obj_ga/in1212.min"
+  sand_box_path: "/Volumes/Jianan_ssd/multi_ga_search_structures_backup"
+  single_run_time_limit: 120
+  num_promoted: 0
+
+# interface structure settings
+interface_settings:
+  cell_height: 16
+  interface_len: 8.761141
+  left_e_per_atom: -3.67014366767725
+  right_e_per_atom: -3.67014366767725
+  min_width: 1
+  max_width: 9
+  max_height: 1.6
+  min_atom_num: 0
+  max_atom_num: 100
+  max_coord_num: 4
+  inter_atom_limit: 'covalent radius'
+  atom_type_list: [15, 15]
+
+# variation parameters
+variational_settings:
+  cut_loc_mu: 0.5
+  cut_loc_sigma: 0.3
+  structure_mutation_fraction: 0.5
+  structure_mutation_sigma: 0.1
+  atom_num_mutation_mean: 0
+  atom_num_mutation_sigma: 3
+  probability_crossover: 0.3
+  probability_structure_mutation: 0.3
+  probability_atom_num_mutation: 0.3
+  probability_random_replace: 0.1
+
+# file settings
+output_settings:
+  write_restart_file: "restart"
+  setting_file: "settings"
+  offspring_file: "offspring"
+  pool_summary: "pool_summary"
+  best_objective_file: "objective_file"
+  hof_file: "hof"
