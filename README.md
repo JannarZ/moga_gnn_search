@@ -10,7 +10,7 @@ To perform the MOGA searching, python scripts in the [ga_scripts](ga_scripts/) m
 [DEAP](https://github.com/DEAP/deap)  
 [Numpy](https://numpy.org/)  
 [PyTorch](https://pytorch.org/)   
-[NetWorkX](https://networkx.org/)
+[NetWorkX](https://networkx.org/)  
 [PyTorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/index.html) 
 
 ## GNN Model
