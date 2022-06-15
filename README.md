@@ -13,6 +13,11 @@ To perform the MOGA searching, python scripts in the [ga_scripts](ga_scripts/) m
 [PyTorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/index.html)  
 [NetWorkX](https://networkx.org/)  
 
+## GNN Model
+The code of the GNN model used for search is share in the following two repositories:
+https://github.com/JannarZ/gnn_bp_gb_tersoff
+https://github.com/JannarZ/gnn_bp_gb_dft
+
 ## Citation
 *J. Zhang, A. Koneru, S.K.R.S. Sankaranarayanan, & C.M. Lilley. Graph Neural Network Guided Evolutionary Search of Grain Boundaries in 2D Materials. [Manuscript under consideration]*  
 
