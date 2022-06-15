@@ -9,7 +9,6 @@ from copy import deepcopy
 from ind_manipulation import attach
 from ase.data import covalent_radii
 from ase.neighborlist import neighbor_list
-from pymatgen.analysis.structure_matcher import StructureMatcher
 
 
 # random select individuals from population
