@@ -19,7 +19,7 @@ https://github.com/JannarZ/gnn_bp_gb_tersoff
 https://github.com/JannarZ/gnn_bp_gb_dft
 
 ## Citation
-*J. Zhang, A. Koneru, S.K.R.S. Sankaranarayanan, & C.M. Lilley. Graph Neural Network Guided Evolutionary Search of Grain Boundaries in 2D Materials. [Manuscript under consideration]*  
+*Zhang J, Koneru A, Sankaranarayanan S, Lilley C. Graph Neural Network Guided Evolutionary Search of Grain Boundaries in 2D Materials. ChemRxiv. Cambridge: Cambridge Open Engage; 2023. (10.26434/chemrxiv-2023-2h5r8)*  
 
-*GA search for 2D GBs: J. Zhang, S. Srinivasan, S.K.R.S. Sankaranarayanan,  & C.M. Lilley. Evolutionary inverse design of defects at graphene 2D lateral interfaces. Journal of Applied Physics 129, 185302 (2021). (https://aip.scitation.org/doi/full/10.1063/5.0046469)*
+*Zhang J, Srinivasan S, Sankaranarayanan SK, Lilley CM. Evolutionary inverse design of defects at graphene 2D lateral interfaces. Journal of Applied Physics. 2021 May 14;129(18):185302. (https://aip.scitation.org/doi/full/10.1063/5.0046469)*
 
