@@ -7,6 +7,7 @@ import networkx as nx
 import numpy as np
 from copy import deepcopy
 from ind_manipulation import attach
+from ase import Atoms
 from ase.data import covalent_radii
 from ase.neighborlist import neighbor_list
 
